@@ -1,0 +1,27 @@
+# permissions for end users to edit azurites.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: azurite-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: azurite-editor-role
+rules:
+- apiGroups:
+  - azure.dotkube.com
+  resources:
+  - azurites
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - azure.dotkube.com
+  resources:
+  - azurites/status
+  verbs:
+  - get

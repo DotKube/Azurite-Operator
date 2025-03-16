@@ -1,0 +1,23 @@
+# permissions for end users to view azurites.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: azurite-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: azurite-viewer-role
+rules:
+- apiGroups:
+  - azure.dotkube.com
+  resources:
+  - azurites
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - azure.dotkube.com
+  resources:
+  - azurites/status
+  verbs:
+  - get

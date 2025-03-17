@@ -1,0 +1,39 @@
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "azurite.fullname" . }}
+  labels:
+    app: {{ include "azurite.name" . }}
+spec:
+  serviceName: {{ include "azurite.fullname" . }}
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "azurite.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "azurite.name" . }}
+    spec:
+      containers:
+        - name: azurite
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.ports.blob }}
+              name: blob
+            - containerPort: {{ .Values.service.ports.queue }}
+              name: queue
+            - containerPort: {{ .Values.service.ports.table }}
+              name: table
+          volumeMounts:
+            - name: azurite-storage
+              mountPath: /data
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: azurite-storage
+          persistentVolumeClaim:
+            claimName: {{ include "azurite.fullname" . }}-pvc

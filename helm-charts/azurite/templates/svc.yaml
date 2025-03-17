@@ -1,0 +1,31 @@
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "azurite.fullname" . }}
+  labels:
+    app: {{ include "azurite.name" . }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: blob
+      port: {{ .Values.service.ports.blob }}
+      targetPort: blob
+      {{- if eq .Values.service.type "NodePort" }}
+      nodePort: {{ .Values.service.nodePorts.blob }}
+      {{- end }}
+    - name: queue
+      port: {{ .Values.service.ports.queue }}
+      targetPort: queue
+      {{- if eq .Values.service.type "NodePort" }}
+      nodePort: {{ .Values.service.nodePorts.queue }}
+      {{- end }}
+    - name: table
+      port: {{ .Values.service.ports.table }}
+      targetPort: table
+      {{- if eq .Values.service.type "NodePort" }}
+      nodePort: {{ .Values.service.nodePorts.table }}
+      {{- end }}
+  selector:
+    app: {{ include "azurite.name" . }}

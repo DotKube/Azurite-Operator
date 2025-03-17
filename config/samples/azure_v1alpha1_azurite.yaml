@@ -3,55 +3,34 @@ kind: Azurite
 metadata:
   name: azurite-sample
 spec:
-  # Default values copied from <project_dir>/helm-charts/azurite/values.yaml
-  affinity: {}
-  autoscaling:
-    enabled: false
-    maxReplicas: 100
-    minReplicas: 1
-    targetCPUUtilizationPercentage: 80
-  fullnameOverride: ""
-  image:
-    pullPolicy: IfNotPresent
-    repository: nginx
-    tag: ""
-  imagePullSecrets: []
-  ingress:
-    annotations: {}
-    className: ""
-    enabled: false
-    hosts:
-    - host: chart-example.local
-      paths:
-      - path: /
-        pathType: ImplementationSpecific
-    tls: []
-  livenessProbe:
-    httpGet:
-      path: /
-      port: http
-  nameOverride: ""
-  nodeSelector: {}
-  podAnnotations: {}
-  podLabels: {}
-  podSecurityContext: {}
-  readinessProbe:
-    httpGet:
-      path: /
-      port: http
   replicaCount: 1
-  resources: {}
-  securityContext: {}
+
+  image:
+    repository: mcr.microsoft.com/azure-storage/azurite
+    tag: latest
+    pullPolicy: IfNotPresent
+
   service:
-    port: 80
-    type: ClusterIP
-  serviceAccount:
-    annotations: {}
-    automount: true
-    create: true
-    name: ""
-  tolerations: []
-  volumeMounts: []
-  volumes: []
-  
-  
+    type: NodePort
+    ports:
+      blob: 10000
+      queue: 10001
+      table: 10002
+    nodePorts:
+      blob: 30000
+      queue: 30001
+      table: 30002
+
+  persistence:
+    enabled: true
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    storageClass: ""
+
+  resources: 
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+    requests:
+      cpu: "250m"
+      memory: "256Mi"

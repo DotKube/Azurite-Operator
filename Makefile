@@ -51,7 +51,8 @@ endif
 OPERATOR_SDK_VERSION ?= v1.39.1
 
 # Image URL to use all building/pushing image targets
-IMG ?= controller:latest
+# IMG ?= controller:latest
+IMG ?= $(IMAGE_TAG_BASE):$(VERSION)
 
 .PHONY: all
 all: docker-build
@@ -225,3 +226,29 @@ catalog-build: opm ## Build a catalog image.
 .PHONY: catalog-push
 catalog-push: ## Push a catalog image.
 	$(MAKE) docker-push IMG=$(CATALOG_IMG)
+
+
+##@ Development
+
+.PHONY: kind-cluster-create
+kind-cluster-create: ## Create a kind cluster.
+	kind create cluster --config kind.yaml
+	kubectl create ns azurite
+	kubens azurite
+
+.PHONY: kind-cluster-delete
+kind-cluster-delete: ## Delete a kind cluster.
+	kind delete cluster --name azurite-development-kind-cluster
+
+.PHONY: apply-sample
+apply-sample: ## Apply sample CRD.
+	kubectl apply -f config/samples/azure_v1alpha1_azurite.yaml
+
+.PHONY: delete-sample
+delete-sample: ## Delete sample CRD.
+	kubectl delete -f config/samples/azure_v1alpha1_azurite.yaml
+
+.PHONY: view-resources
+view-resources: ## View resources.
+	kubectl get all -n azurite
+	kubectl get azurite -n azurite
